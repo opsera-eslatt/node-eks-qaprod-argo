@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: node-eks-ns
+  
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-eks-deployment
+  namespace: node-eks-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: back-end
+          image: 792373136340.dkr.ecr.us-east-2.amazonaws.com/cisco_pov:91ccea0b10291c0a49af810bc357265ef75fa8e1
+
+---
+#Service
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: node-eks-label
+  name: node-eks-service
+  namespace: node-eks-ns
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: web
+  sessionAffinity: None
+  type: LoadBalancer
+
+---
